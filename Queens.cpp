@@ -5,21 +5,24 @@
 using namespace std;
 
 void allocateField(int field[8][8]);
-void displayField(int field[8][8]);
+void displayField();
 void placeQueen(int i, int j);
 void removeQueen(int i, int j);
 void solve(int i);
 void saveResult(char *filename);
+bool checkMainDiags();
 
 int field[8][8];
 int totalSolves = 0;
+
+
 
 int _tmain()
 {
 	setlocale(LC_ALL, "Russian");
 	allocateField(field);
 	int time = clock();
-	solve(0);
+	solve(7);
 	time = clock() - time;
 	cout << "Всего найдено решений: " << totalSolves << endl;
 	cout << "Затрачено времени: " << time << " мс" << endl;
@@ -28,7 +31,7 @@ int _tmain()
 	cin >> question;
 	if (question == 'Y' || question == 'y')
 	{
-		system("result.txt");
+		system("start result.txt");
 	}
 	system("pause");
 }
@@ -58,6 +61,7 @@ void displayField()
 			{
 				cout << "0 ";
 			}
+			//cout << field[i][j] << " ";
 		}
 		cout << endl;
 	}
@@ -74,11 +78,11 @@ void placeQueen(int i, int j)
 		field[i][x]++;
 		if (i + j - x >= 0 && i + j - x < 8)
 		{
-			field[i + j - x][x]++;
+			field[i + j - x][x]++;//нисходящая диагональ (слева направо)
 		}
 		if (i - j + x >= 0 && i - j + x < 8)
 		{
-			field[i - j + x][x]++;
+			field[i - j + x][x]++;//восходящая диагональ (слева направо)
 		}
 	}
 	field[i][j] = -1;
@@ -104,20 +108,22 @@ void removeQueen(int i, int j)
 
 void solve(int i)
 {
-	for (int j = 0; j < 8; j++)
+	for (int j = 7; j >= 0; j--)
 	{
 		if (field[i][j] == 0)
 		{
 			placeQueen(i, j);
-			if (i == 7)
+			if (i == 0)
 			{
-				totalSolves++;
-				//displayField();
-				saveResult("Result.txt");
+				if(!checkMainDiags())
+				{
+					totalSolves++;
+					saveResult("Result.txt");
+				}
 			}
 			else
 			{
-				solve(i + 1);
+				solve(i - 1);
 			}
 			removeQueen(i, j);
 		}
@@ -153,4 +159,36 @@ void saveResult(char *filename)
 		file << endl;
 	}
 	file.close();
+}
+
+
+bool checkMainDiags()
+{
+	int i = 0;
+	int j = 0;
+	for (int x = 0; x < 8; x++)
+	{
+		if (i - j + x >= 0 && i - j + x < 8)
+		{
+			if(field[i - j + x][x] == -1)
+			{
+				return true;
+				break;
+			}
+		}
+	}
+	i = 0;
+	j = 7;
+	for (int x = 0; x < 8; x++)
+	{
+		if (i + j - x >= 0 && i + j - x < 8)
+		{
+			if(field[i + j - x][x] == -1)
+			{
+				return true;
+				break;
+			}
+		}
+	}
+	return false;
 }
