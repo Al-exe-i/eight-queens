@@ -10,7 +10,6 @@ void placeQueen(int i, int j);
 void removeQueen(int i, int j);
 void solve(int i);
 void saveResult(char *filename);
-bool checkMainDiags();
 
 int field[8][8];
 int totalSolves = 0;
@@ -114,12 +113,9 @@ void solve(int i)
 		{
 			placeQueen(i, j);
 			if (i == 0)
-			{
-				if(!checkMainDiags())
-				{
-					totalSolves++;
-					saveResult("Result.txt");
-				}
+			{	
+				totalSolves++;
+				saveResult("Result.txt");
 			}
 			else
 			{
@@ -159,36 +155,4 @@ void saveResult(char *filename)
 		file << endl;
 	}
 	file.close();
-}
-
-
-bool checkMainDiags()
-{
-	int i = 0;
-	int j = 0;
-	for (int x = 0; x < 8; x++)
-	{
-		if (i - j + x >= 0 && i - j + x < 8)
-		{
-			if(field[i - j + x][x] == -1)
-			{
-				return true;
-				break;
-			}
-		}
-	}
-	i = 0;
-	j = 7;
-	for (int x = 0; x < 8; x++)
-	{
-		if (i + j - x >= 0 && i + j - x < 8)
-		{
-			if(field[i + j - x][x] == -1)
-			{
-				return true;
-				break;
-			}
-		}
-	}
-	return false;
 }
